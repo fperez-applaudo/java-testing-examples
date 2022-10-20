@@ -44,9 +44,11 @@ public class ResourcesControllerTest {
     ResourcesDto resourcesDto = ResourceFactory.createResourcesDto(10);
     // when
     when(resourcesService.getResourcesRequest())
-    // then
         .thenReturn(resourcesDto);
 
-    this.mockMvc.perform(get("/resources")).andExpect(status().isOk()).andDo(print());
+    // then
+    this.mockMvc.perform(get("/resources"))
+        .andExpect(status().isOk())
+        .andDo(print());
   }
 }

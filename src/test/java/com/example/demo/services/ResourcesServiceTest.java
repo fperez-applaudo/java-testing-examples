@@ -62,11 +62,10 @@ public class ResourcesServiceTest {
     // when
     mockServer.expect(once(), requestTo(apiUrl + getPath))
         .andExpect(method(HttpMethod.GET))
-        // then
         .andRespond(
             withSuccess(resourcesDtoRaw, MediaType.APPLICATION_JSON)
         );
-
+    //then
     ResourcesDto responseBody = realResourcesService.getResourcesRequest();
 
     mockServer.verify();
