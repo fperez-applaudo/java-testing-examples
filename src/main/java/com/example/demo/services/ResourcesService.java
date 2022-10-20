@@ -4,8 +4,6 @@ import com.example.demo.models.dto.ResourcesDto;
 
 public interface ResourcesService {
 
-  String foo();
-
   void setApiUrl(String apiUrl);
 
   void setGetPath(String getPath);

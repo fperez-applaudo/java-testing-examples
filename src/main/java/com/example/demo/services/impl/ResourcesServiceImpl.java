@@ -22,11 +22,6 @@ public class ResourcesServiceImpl implements ResourcesService {
   private String getPath;
 
   @Override
-  public String foo() {
-    return "";
-  }
-
-  @Override
   @Value("${dummy.api.url}")
   public final void setApiUrl(String apiUrl) {
     this.apiUrl = apiUrl;
