@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -23,10 +24,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.client.ExpectedCount.once;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -51,6 +54,11 @@ public class ResourcesControllerTest {
 
   private MockRestServiceServer mockServer;
 
+  @Value("${dummy.api.url}")
+  private String apiUrl;
+
+  @Value("${dummy.api.resources.get}")
+  private String getPath;
 
   @Before
   public void setUp() {
@@ -58,6 +66,8 @@ public class ResourcesControllerTest {
     mockServer = MockRestServiceServer.bindTo(restTemplate).ignoreExpectOrder(true).build();
     mockServer.reset();
     this.realResourcesService = new ResourcesServiceImpl(restTemplate);
+    this.realResourcesService.setGetPath(this.getPath);
+    this.realResourcesService.setApiUrl(this.apiUrl);
   }
 
   @Test
@@ -70,7 +80,7 @@ public class ResourcesControllerTest {
     // then
         .thenReturn(resourcesDto);
 
-    this.mockMvc.perform(get("/resources")).andExpect(status().isOk());
+    this.mockMvc.perform(get("/resources")).andExpect(status().isOk()).andDo(print());
   }
 
   @Test
@@ -81,7 +91,7 @@ public class ResourcesControllerTest {
     ResourcesDto resourcesDto = ResourceFactory.createResourcesDto(productQt);
     String resourcesDtoRaw = objectMapper.writeValueAsString(resourcesDto);
     // when
-    mockServer.expect(requestTo("https://dummyjson.com/products"))
+    mockServer.expect(once(), requestTo(apiUrl + getPath))
         .andExpect(method(HttpMethod.GET))
         // then
         .andRespond(
